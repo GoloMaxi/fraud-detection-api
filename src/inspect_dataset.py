@@ -1,11 +1,9 @@
 import pandas as pd
-from pathlib import Path
 
+from src.config import RAW_TRAIN_PATH, RAW_TEST_PATH, TARGET_COL
 
-RAW_DIR = Path("data/raw")
-
-train = pd.read_csv(RAW_DIR / "fraudTrain.csv")
-test = pd.read_csv(RAW_DIR / "fraudTest.csv")
+train = pd.read_csv(RAW_TRAIN_PATH)
+test = pd.read_csv(RAW_TEST_PATH)
 
 print(f"train shape: {train.shape}")
 print(f"test shape: {test.shape}")
@@ -29,10 +27,10 @@ print("\ntrain missing values:")
 print(train.isna().sum().sort_values(ascending=False))
 
 print("\ntarget counts:")
-print(train["is_fraud"].value_counts())
+print(train[TARGET_COL].value_counts())
 
 print("\ntarget distribution:")
-print(train["is_fraud"].value_counts(normalize=True))
+print(train[TARGET_COL].value_counts(normalize=True))
 
 print("\ndescribe for numeric columns:")
 print(train.describe())
