@@ -3,10 +3,65 @@ from sklearn.model_selection import train_test_split
 
 from src.config import RAW_TRAIN_PATH, RAW_TEST_PATH, TARGET_COL, TEST_SIZE, RANDOM_STATE
 
+EXPECTED_RAW_COLUMNS = [
+    'Unnamed: 0',
+    'trans_date_trans_time',
+    'cc_num',
+    'merchant',
+    'category',
+    'amt',
+    'first',
+    'last',
+    'gender',
+    'street',
+    'city',
+    'state',
+    'zip',
+    'lat',
+    'long',
+    'city_pop',
+    'job',
+    'dob',
+    'trans_num',
+    'unix_time',
+    'merch_lat',
+    'merch_long',
+    'is_fraud'
+]
+
+
+def validate_columns(
+        df: pd.DataFrame,
+        expected_columns: list[str] = EXPECTED_RAW_COLUMNS,
+        dataset_name: str = 'dataset'
+) -> None:
+    actual_columns = set(df.columns)
+    expected_columns = set(expected_columns)
+
+    missing_columns = expected_columns - actual_columns
+    unexpected_columns = actual_columns - expected_columns
+
+    if missing_columns:
+        raise ValueError(f"{dataset_name} has missing columns: {missing_columns}")
+    if unexpected_columns:
+        raise ValueError(f"{dataset_name} has unexpected columns: {unexpected_columns}")
+
+
+def validate_raw_data(train: pd.DataFrame, test: pd.DataFrame) -> None:
+    
+    validate_columns(train, dataset_name="train")
+    validate_columns(test, dataset_name="test")
+    validate_target(train)
+    validate_target(test)
+
+    if list(train.columns) != list(test.columns):
+        raise ValueError("Train and test columns are different")
+
 
 def load_raw_data() -> tuple[pd.DataFrame, pd.DataFrame]:
     train = pd.read_csv(RAW_TRAIN_PATH)
     test = pd.read_csv(RAW_TEST_PATH)
+    validate_raw_data(train, test)
     return train, test
 
 
