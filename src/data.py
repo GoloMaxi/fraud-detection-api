@@ -3,7 +3,7 @@ from sklearn.model_selection import train_test_split
 
 from src.config import RAW_TRAIN_PATH, RAW_TEST_PATH, TARGET_COL, TEST_SIZE, RANDOM_STATE
 
-from src.columns import EXPECTED_RAW_COLUMNS
+from src.columns import EXPECTED_RAW_COLUMNS, BASELINE_DROP_COLUMNS
 
 
 def validate_columns(
@@ -73,16 +73,42 @@ def split_train_valid(df: pd.DataFrame):
     return X_train, X_valid, y_train, y_valid
 
 
+def create_baseline_dataset(
+        df: pd.DataFrame,
+        drop_columns: list[str] = BASELINE_DROP_COLUMNS
+) -> pd.DataFrame:
+    
+    missing_columns = set(drop_columns) - set(df.columns)
+    if missing_columns:
+        raise ValueError(f"Dataset has missing columns: {sorted(missing_columns)}")
+    
+    clean_df = df.copy().drop(columns=drop_columns)
+
+    return clean_df
+
+
+
 if __name__ == "__main__":
     train, test = load_raw_data()
-    print(f"Train shape: {train.shape}")
-    print(f"Test shape: {test.shape}")
 
-    X_train, X_valid, y_train, y_valid = split_train_valid(train)
-    print(X_train.shape)
-    print(X_valid.shape)
-    print(y_train.shape)
-    print(y_valid.shape)
+    train_baseline = create_baseline_dataset(train)
+    test_baseline = create_baseline_dataset(test)
+    print(f"Raw train baseline: {train.shape}")
+    print(f"Baseline train baseline: {train_baseline.shape}")
+    print(f"\nRaw test baseline: {test.shape}")
+    print(f"Baseline test baseline: {test_baseline.shape}")
 
-    print(f"y_train fraud rate: {y_train.value_counts(normalize=True)}")
+    print("\nDropped columns:")
+    print(BASELINE_DROP_COLUMNS)
+
+
+    X_train, X_valid, y_train, y_valid = split_train_valid(train_baseline)
+    print(f"\nX_train: {X_train.shape}")
+    print(f"X_valid: {X_valid.shape}")
+    print(f"y_train: {y_train.shape}")
+    print(f"y_valid: {y_valid.shape}")
+
+    print(f"\ny_train fraud rate: {y_train.value_counts(normalize=True)}")
     print(f"y_valid fraud rate: {y_valid.value_counts(normalize=True)}")
+
+    
