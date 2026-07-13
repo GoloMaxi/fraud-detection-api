@@ -3,31 +3,7 @@ from sklearn.model_selection import train_test_split
 
 from src.config import RAW_TRAIN_PATH, RAW_TEST_PATH, TARGET_COL, TEST_SIZE, RANDOM_STATE
 
-EXPECTED_RAW_COLUMNS = [
-    'Unnamed: 0',
-    'trans_date_trans_time',
-    'cc_num',
-    'merchant',
-    'category',
-    'amt',
-    'first',
-    'last',
-    'gender',
-    'street',
-    'city',
-    'state',
-    'zip',
-    'lat',
-    'long',
-    'city_pop',
-    'job',
-    'dob',
-    'trans_num',
-    'unix_time',
-    'merch_lat',
-    'merch_long',
-    'is_fraud'
-]
+from src.columns import EXPECTED_RAW_COLUMNS
 
 
 def validate_columns(
